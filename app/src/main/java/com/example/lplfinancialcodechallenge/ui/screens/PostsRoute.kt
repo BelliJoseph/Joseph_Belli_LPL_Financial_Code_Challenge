@@ -1,5 +1,6 @@
 package com.example.lplfinancialcodechallenge.ui.screens
 
+import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
@@ -93,8 +94,12 @@ private fun PostItem(
     post: PostDomainModel,
     updatePost: (post: PostDomainModel, imagePath: String) -> Unit,
 ) {
+    val context = LocalContext.current
+
     val pickMedia = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
+        val flag = Intent.FLAG_GRANT_READ_URI_PERMISSION
         if (uri != null) {
+            context.contentResolver.takePersistableUriPermission(uri, flag)
             updatePost(post, uri.toString())
         }
     }
@@ -113,7 +118,7 @@ private fun PostItem(
                     .size(50.dp)
                     .padding(4.dp),
                 contentDescription = post.name,
-                model = ImageRequest.Builder(LocalContext.current)
+                model = ImageRequest.Builder(context)
                     .data(post.image)
                     .placeholder(R.drawable.person)
                     .error(R.drawable.person)
